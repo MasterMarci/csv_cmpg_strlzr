@@ -50,7 +50,9 @@
 				var currentLength = resultTable.length;
 				resultTable.push(new Array());
 				if (rowIndex == 0) {
-					genderIndex = (csv.data[rowIndex].indexOf("Geschlecht") != -1 ? csv.data[rowIndex].indexOf("Geschlecht") : (csv.data[rowIndex].indexOf("Alter") != -1 ? csv.data[rowIndex].indexOf("Alter"): csv.data[rowIndex].indexOf("Gerät")));
+					genderIndex = (csv.data[rowIndex].indexOf("Geschlecht") != -1 ? csv.data[rowIndex].indexOf("Geschlecht") : 
+						       (csv.data[rowIndex].indexOf("Alter") != -1 ? csv.data[rowIndex].indexOf("Alter"): 
+							(csv.data[rowIndex].indexOf("Gerät") != -1 ? csv.data[rowIndex].indexOf("Gerät") : csv.data[rowIndex].indexOf("Region"))));
 					spendIndex = csv.data[rowIndex].indexOf("Ausgaben");
 					impressionsIndex = csv.data[rowIndex].indexOf("Impressions insgesamt");
 					clicksIndex = csv.data[rowIndex].indexOf("Klicks (gesamt)");
