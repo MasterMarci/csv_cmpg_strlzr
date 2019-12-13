@@ -1,0 +1,168 @@
+<html>
+
+<head>
+	<script src="./papaparse.min.js"></script>
+	<script>
+
+		const PAPAPARSE_CONFIG = {
+			delimiter: "",	// auto-detect
+			newline: "",	// auto-detect
+			quoteChar: '"',
+			escapeChar: '"',
+			header: false,
+			transformHeader: undefined,
+			dynamicTyping: false,
+			preview: 0,
+			encoding: "",
+			worker: false,
+			comments: false,
+			step: undefined,
+			complete: undefined,
+			error: undefined,
+			download: false,
+			downloadRequestHeaders: undefined,
+			skipEmptyLines: false,
+			chunk: undefined,
+			fastMode: undefined,
+			beforeFirstChunk: undefined,
+			withCredentials: undefined,
+			transform: undefined,
+			delimitersToGuess: [',', '\t', '|', ';', Papa.RECORD_SEP, Papa.UNIT_SEP]
+		}
+
+		function download(filename, text) {
+			var element = document.createElement('a');
+			element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+			element.setAttribute('download', filename);
+			element.style.display = 'none';
+			document.body.appendChild(element);
+			element.click();
+			document.body.removeChild(element);
+		}
+
+		function fillFilteredTable(rowIndex, rowsLen, resultTable, csv, genderValues) {
+			var genderIndex;
+			var spendIndex;
+			var impressionsIndex;
+			var clicksIndex;
+			var engagementsIndex;
+			for (rowIndex = 0; rowIndex < rowsLen; rowIndex++) {
+				var currentLength = resultTable.length;
+				resultTable.push(new Array());
+				if (rowIndex == 0) {
+					genderIndex = (csv.data[rowIndex].indexOf("Geschlecht") != -1 ? csv.data[rowIndex].indexOf("Geschlecht") : (csv.data[rowIndex].indexOf("Alter") != -1 ? csv.data[rowIndex].indexOf("Alter"): csv.data[rowIndex].indexOf("Gerät")));
+					spendIndex = csv.data[rowIndex].indexOf("Ausgaben");
+					impressionsIndex = csv.data[rowIndex].indexOf("Impressions insgesamt");
+					clicksIndex = csv.data[rowIndex].indexOf("Klicks (gesamt)");
+					engagementsIndex = csv.data[rowIndex].indexOf("Interaktionen insgesamt");
+
+					resultTable[currentLength].push(csv.data[rowIndex][genderIndex]);
+					resultTable[currentLength].push(csv.data[rowIndex][spendIndex]);
+					resultTable[currentLength].push(csv.data[rowIndex][impressionsIndex]);
+					resultTable[currentLength].push(csv.data[rowIndex][clicksIndex]);
+					resultTable[currentLength].push(csv.data[rowIndex][engagementsIndex]);
+					resultTable[currentLength].push("ER");
+					resultTable[currentLength].push("eCPM");
+				} else {
+					if (!(genderValues.indexOf(csv.data[rowIndex][genderIndex]) >= 0)) {
+						genderValues.push(csv.data[rowIndex][genderIndex]);
+					}
+					resultTable[currentLength].push(csv.data[rowIndex][genderIndex]);
+					resultTable[currentLength].push(csv.data[rowIndex][spendIndex]);
+					resultTable[currentLength].push(csv.data[rowIndex][impressionsIndex]);
+					resultTable[currentLength].push(csv.data[rowIndex][clicksIndex]);
+					resultTable[currentLength].push(csv.data[rowIndex][engagementsIndex]);
+					resultTable[currentLength].push("ER");
+					resultTable[currentLength].push("eCPM");
+				}
+				// repeat for other lines (save index?)
+			}
+		}
+
+		function parseAndTransformCSV(csvString) {
+			var csv = Papa.parse(csvString, PAPAPARSE_CONFIG);
+			console.log(csv);
+			var rowsLen = csv.data.length;
+			var rowIndex;
+
+			// Gender Targeting
+			// gender, spend, impressions, clicks, engagements, ER, eCPM
+			var resultTable = new Array();
+			var genderValues = new Array();
+
+			fillFilteredTable(rowIndex, rowsLen, resultTable, csv, genderValues);
+
+			console.log(resultTable);
+			
+			var endResultTable = new Array();
+			endResultTable.push(new Array());
+			var resultLabelIndex;
+			for (resultLabelIndex = 0; resultLabelIndex < resultTable[0].length; resultLabelIndex++) {
+				endResultTable[0].push(resultTable[0][resultLabelIndex]);
+			}
+
+			var genderValueIndex;
+			for (genderValueIndex = 1; genderValueIndex < genderValues.length + 1; genderValueIndex++) {
+				var currentGender = genderValues[genderValueIndex - 1];
+				endResultTable.push(new Array());
+				endResultTable[genderValueIndex].push(""); // gender
+				endResultTable[genderValueIndex].push(0); // spend
+				endResultTable[genderValueIndex].push(0); // impr
+				endResultTable[genderValueIndex].push(0); // click
+				endResultTable[genderValueIndex].push(0); // eng
+				endResultTable[genderValueIndex].push(0); // ER
+				endResultTable[genderValueIndex].push(0); // CPM
+
+
+				var resultRowIndex;
+				for (resultRowIndex = 1; resultRowIndex < resultTable.length; resultRowIndex++) {
+					if (resultTable[resultRowIndex].indexOf(currentGender) == 0) {
+						endResultTable[genderValueIndex][0] = currentGender;
+						endResultTable[genderValueIndex][1] += parseFloat(resultTable[resultRowIndex][1]);
+						endResultTable[genderValueIndex][2] += parseFloat(resultTable[resultRowIndex][2]);
+						endResultTable[genderValueIndex][3] += parseFloat(resultTable[resultRowIndex][3]);
+						endResultTable[genderValueIndex][4] += parseFloat(resultTable[resultRowIndex][4]);
+					}
+				}
+			}
+
+			for (genderValueIndex = 1; genderValueIndex < genderValues.length + 1; genderValueIndex++) {
+				endResultTable[genderValueIndex][5] = endResultTable[genderValueIndex][4] / endResultTable[genderValueIndex][2];
+				endResultTable[genderValueIndex][6] = (endResultTable[genderValueIndex][1] / endResultTable[genderValueIndex][2]) * 1000;
+			}
+			console.log(endResultTable);
+			var exportable = Papa.unparse(endResultTable);
+			exportable = exportable.replace(/\r\n/g, "\"\r\n\"");
+			exportable = exportable.replace(/,/g, "\",\"");
+			exportable = "\"" + exportable + "\"";
+			console.log(exportable);
+			download("gender_targeting.csv", exportable);
+		}
+
+		function loadFile() {
+			var csvFile = document.getElementById("csvUpload").files[0];
+			var csvString;
+			var reader = new FileReader();
+			reader.onload = function (e) {
+				var contents = e.target.result;
+				document.getElementById("csvContent").value = contents;
+				parseAndTransformCSV(contents)
+			};
+			reader.readAsText(csvFile);
+		}
+
+		(function () {
+			// on document load
+		})();
+	</script>
+
+</head>
+
+<body>
+	<h1>CSV Converter</h1>
+	<input type="file" id="csvUpload">
+	<button id="startConvertButton" onClick="loadFile()" />
+	<input type="hidden" id="csvContent" onchange="parseAndTransformCSV()" />
+</body>
+
+</html>
