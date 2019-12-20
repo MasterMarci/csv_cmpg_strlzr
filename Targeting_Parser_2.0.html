@@ -1,0 +1,224 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+	<script src="./papaparse.min.js"></script>
+    <script src="./table_headers.js" charset="UTF-8"></script>
+    <script>
+
+		const PAPAPARSE_CONFIG = {
+			delimiter: "",	// auto-detect
+			newline: "",	// auto-detect
+			quoteChar: '"',
+			escapeChar: '"',
+			header: false,
+			transformHeader: undefined,
+			dynamicTyping: false,
+			preview: 0,
+			encoding: "ISO-8859-1",
+			worker: false,
+			comments: false,
+			step: undefined,
+			complete: undefined,
+			error: undefined,
+			download: false,
+			downloadRequestHeaders: undefined,
+			skipEmptyLines: false,
+			chunk: undefined,
+			fastMode: undefined,
+			beforeFirstChunk: undefined,
+			withCredentials: undefined,
+			transform: undefined,
+			delimitersToGuess: [',', '\t', '|', ';', Papa.RECORD_SEP, Papa.UNIT_SEP]
+		}
+
+		const UNPARSE_CONFIG = {
+			quotes: false, //or array of booleans
+			quoteChar: '"',
+			escapeChar: '"',
+			delimiter: ",",
+			header: true,
+			newline: "\r\n",
+			skipEmptyLines: false, //or 'greedy',
+			columns: null //or array of strings
+		}
+
+		function download(filename, text) {
+            var universalBOM = "\uFEFF";
+			var element = document.createElement('a');
+			element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(universalBOM + text));
+			element.setAttribute('download', filename);
+			element.style.display = 'none';
+			document.body.appendChild(element);
+			element.click();
+			document.body.removeChild(element);
+        }
+        
+        function findCriteriaIndex(data, headers) {
+            var headerIndex;
+            var result = undefined;
+            for(headerIndex = 0; headerIndex < headers.length; headerIndex++) {
+                if (headers[headerIndex].isCriteria && data.indexOf(headers[headerIndex].name) >= 0) {
+                    result = data.indexOf(headers[headerIndex].name);
+                    break;
+                }
+            }
+
+            if (result == undefined) {
+                alert("No Criteria found!");
+                throw Error("Criteria not found");
+            }
+			return result;
+        }
+
+		function fillFilteredTable(resultTable, csv, headers, criteriaValues) {
+			var criteriaIndex;
+            var headersIndex;
+            var rowIndex;
+			for (rowIndex = 0; rowIndex < csv.data.length; rowIndex++) {
+				var currentLength = resultTable.length;
+				resultTable.push(new Array());
+				if (rowIndex == 0) {
+                    criteriaIndex = findCriteriaIndex(csv.data[rowIndex], headers);
+                    for (headersIndex = 0; headersIndex < headers.length; headersIndex++) {
+                        headers[headersIndex].index = csv.data[rowIndex].indexOf(headers[headersIndex].name);
+					}
+					
+					for (headersIndex = headers.length - 1; headersIndex >= 0; headersIndex--) {
+                        if ((headers[headersIndex].index === "undefined" || headers[headersIndex].index < 0) &&  headers[headersIndex].isCriteria) {
+							headers.splice(headersIndex,1);
+						}
+                    }
+
+                    for (headersIndex = 0; headersIndex < headers.length; headersIndex++) {
+                        if(headers[headersIndex].index !== "undefined" && headers[headersIndex].index >= 0) {
+                            resultTable[currentLength].push(headers[headersIndex].name);
+                        }
+                    }
+
+				} else {
+					if (!(criteriaValues.indexOf(csv.data[rowIndex][criteriaIndex]) >= 0)) {
+						criteriaValues.push(csv.data[rowIndex][criteriaIndex]);
+                    }
+
+                    for (headersIndex = 0; headersIndex < headers.length; headersIndex++) {
+                        if(headers[headersIndex].index !== "undefined" && headers[headersIndex].index >= 0) {
+                            resultTable[currentLength].push(csv.data[rowIndex][headers[headersIndex].index]);
+                        }
+                    }
+				}
+			}
+		}
+
+		function parseAndTransformCSV(csvString) {
+			var csv = Papa.parse(csvString, PAPAPARSE_CONFIG);
+            console.log(csv);
+            
+            var headers = eval(document.querySelector('input[name="language"]:checked').value + "_" + document.querySelector('input[name="header_preset"]:checked').value);
+
+			// Gender Targeting
+			// gender, spend, impressions, clicks, engagements, ER, eCPM
+			var resultTable = new Array();
+			var criteriaValues = new Array();
+
+			fillFilteredTable(resultTable, csv, headers, criteriaValues);
+
+			console.log(resultTable);
+			
+			var endResultTable = new Array();
+			endResultTable.push(new Array());
+			var resultLabelIndex;
+			for (resultLabelIndex = 0; resultLabelIndex < headers.length; resultLabelIndex++) {
+				endResultTable[0].push(headers[resultLabelIndex].name);
+			}
+
+			var criteriaValueIndex;
+			for (criteriaValueIndex = 1; criteriaValueIndex < criteriaValues.length + 1; criteriaValueIndex++) {
+				var currentCriteria = criteriaValues[criteriaValueIndex - 1];
+                endResultTable.push(new Array());
+                var headersIndex;
+                for (headersIndex = 0; headersIndex < headers.length; headersIndex++) {
+                    endResultTable[criteriaValueIndex].push(0);
+                }
+
+				var resultRowIndex;
+				for (resultRowIndex = 1; resultRowIndex < resultTable.length; resultRowIndex++) {
+					if (resultTable[resultRowIndex].indexOf(currentCriteria) == 0) {
+                        // clear headers from uneeded headers everything should match
+                        var toRemoveIndex;
+                        
+                        for (toRemoveIndex = headers.length - 1; toRemoveIndex >= 0; toRemoveIndex--) {
+                            if ((headers[toRemoveIndex].index === "undefined" || headers[toRemoveIndex].index < 0) && headers[toRemoveIndex].calculated == false) {
+                                headers.splice(toRemoveIndex, 1);
+                            }
+                        }
+                        for (headersIndex = 0; headersIndex < headers.length; headersIndex++) {
+                            if (headersIndex == 0) {
+                                endResultTable[criteriaValueIndex][headersIndex] = currentCriteria;
+                            } else {
+                                endResultTable[criteriaValueIndex][headersIndex] += parseFloat(resultTable[resultRowIndex][headersIndex]);
+                            }
+                        }
+					}
+				}
+			}
+
+			for (criteriaValueIndex = 1; criteriaValueIndex < criteriaValues.length + 1; criteriaValueIndex++) {
+                for (headersIndex = 0; headersIndex < headers.length; headersIndex++) {
+                    if(headers[headersIndex].calculated) {
+                        endResultTable[criteriaValueIndex][headersIndex] = headers[headersIndex].calculate(headers, endResultTable[criteriaValueIndex]);
+                    }
+                }
+			}
+			console.log(endResultTable);
+			var exportable = Papa.unparse(endResultTable, UNPARSE_CONFIG);
+			/*exportable = exportable.replace(/\r\n/g, "\"\r\n\"");
+			exportable = exportable.replace(/,/g, "\",\"");
+			exportable = "\"" + exportable + "\"";*/
+			console.log(exportable);
+			download("gender_targeting.csv", exportable);
+		}
+
+		function loadFile() {
+			var csvFile = document.getElementById("csvUpload").files[0];
+			var csvString;
+			var reader = new FileReader();
+			reader.onload = function (e) {
+				var contents = e.target.result;
+				document.getElementById("csvContent").value = contents;
+				parseAndTransformCSV(contents)
+			};
+			reader.readAsText(csvFile);
+		}
+
+		(function () {
+			// on document load
+		})();
+	</script>
+
+</head>
+
+<body>
+	<h1>CSV Converter</h1>
+    <input type="file" id="csvUpload" />
+    <br />
+    <br />
+    <h2>Language</h2>
+    <input type="radio" name="language" id="lng_ger" value="DE"><label for="lng_ger">German</label>
+    <input type="radio" name="language" id="lng_eng" value="EN"><label for="lng_eng">English</label>
+    <br />
+    <br />
+    <h2>Campaign Type</h2>
+    <input type="radio" name="header_preset" id="cmp_awer" value="AWARENESS" onchange="document.getElementById('startConvertButton').disabled=false"/>
+    <label for="cmp_awer">Awareness</label>
+    <br />
+    <br />
+    <input type="radio" name="header_preset" id="cmp_trf" value="TRAFFIC" onchange="document.getElementById('startConvertButton').disabled=false"/>
+    <label for="cmp_trf">Traffic</label>
+    <br />
+    <br />
+	<button id="startConvertButton" onClick="loadFile()" disabled=true>Convert</button>
+	<input type="hidden" id="csvContent" onchange="parseAndTransformCSV()" />
+</body>
+
+</html>
