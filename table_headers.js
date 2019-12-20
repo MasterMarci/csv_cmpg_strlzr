@@ -73,6 +73,7 @@ const ENGLISH = "english";
 
         const DEVICE_EN = new EnglishHeader("Device", true, false, undefined, undefined);
         const GENDER_EN = new EnglishHeader("Gender", true, false, undefined, undefined);
+        const REGION_EN = new EnglishHeader("Region", true, false, undefined, undefined);
         const AGE_EN = new EnglishHeader("Age", true, false, undefined, undefined);
         const INTERESTS_EN = new EnglishHeader("Interests", true, false, undefined, undefined);
         const METRO_EN = new EnglishHeader("Metro", true, false, undefined, undefined);
@@ -87,7 +88,7 @@ const ENGLISH = "english";
         const ECTR_EN = new EnglishHeader("eCTR", false, true, [CLICKS_EN.name, IMPRESSIONS_EN.name], (clicks, impr) => clicks/impr);
         const ECPC_EN = new EnglishHeader("eCPC", false, true, [SPEND_EN.name, CLICKS_EN.name], (spend, clicks) => spend/clicks);
 
-        const EN_AWARENESS = [DEVICE_EN, METRO_EN, LOCATION_EN, AGE_EN, INTERESTS_EN, GENDER_EN, SPEND_EN, IMPRESSIONS_EN, CLICKS_EN, ENGAGEMENTS_EN, ER_EN, ECPM_EN];
-        const EN_TRAFFIC = [DEVICE_EN, METRO_EN, LOCATION_EN, AGE_EN, INTERESTS_EN, GENDER_EN, SPEND_EN, IMPRESSIONS_EN, CLICKS_EN, ECTR_EN, ECPC_EN];
+        const EN_AWARENESS = [DEVICE_EN, REGION_EN, METRO_EN, LOCATION_EN, AGE_EN, INTERESTS_EN, GENDER_EN, SPEND_EN, IMPRESSIONS_EN, CLICKS_EN, ENGAGEMENTS_EN, ER_EN, ECPM_EN];
+        const EN_TRAFFIC = [DEVICE_EN, REGION_EN, METRO_EN, LOCATION_EN, AGE_EN, INTERESTS_EN, GENDER_EN, SPEND_EN, IMPRESSIONS_EN, CLICKS_EN, ECTR_EN, ECPC_EN];
 
         const ONLY_FOR_CALCULATION = [ENGAGEMENTS_DE, ENGAGEMENTS_EN];
