@@ -1,20 +1,20 @@
 <html>
-
-<head>
-    <meta charset="UTF-8">
-	<script src="./papaparse.min.js"></script>
-    <script src="./table_headers.js" charset="UTF-8"></script>
-    <script>
+	
+	<head>
+		<meta charset="UTF-8">
+		<script src="./papaparse.min.js"></script>
+		<script src="./table_headers.js" charset="UTF-8"></script>
+		<script>
 
 		const PAPAPARSE_CONFIG = {
 			delimiter: "",	// auto-detect
 			newline: "",	// auto-detect
 			quoteChar: '"',
+			preview: 0,
 			escapeChar: '"',
 			header: false,
 			transformHeader: undefined,
 			dynamicTyping: false,
-			preview: 0,
 			encoding: "ISO-8859-1",
 			worker: false,
 			comments: false,
@@ -114,7 +114,7 @@
 			var csv = Papa.parse(csvString, PAPAPARSE_CONFIG);
             console.log(csv);
             
-            var headers = eval(document.querySelector('input[name="language"]:checked').value + "_" + document.querySelector('input[name="header_preset"]:checked').value);
+            var headers = eval(document.querySelector('input[name="language"]:checked').value + "_" + document.querySelector('input[name="header_preset"]:checked').value + ".slice()");
 
 			// Gender Targeting
 			// gender, spend, impressions, clicks, engagements, ER, eCPM
