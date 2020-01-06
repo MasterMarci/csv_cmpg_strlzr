@@ -68,8 +68,8 @@ const ENGLISH = "english";
         const ECTR_DE = new GermanHeader("eCTR", false, true, [CLICKS_DE.name, IMPRESSIONS_DE.name], (clicks, impr) => clicks/impr);
         const ECPC_DE = new GermanHeader("eCPC", false, true, [SPEND_DE.name, CLICKS_DE.name], (spend, clicks) => spend/clicks);
 
-        const DE_AWARENESS = [DEVICE_DE, LOCATION_DE, AGE_DE, INTERESTS_DE, GENDER_DE, SPEND_DE, IMPRESSIONS_DE, CLICKS_DE, ENGAGEMENTS_DE, ER_DE, ECPM_DE];
-        const DE_TRAFFIC = [DEVICE_DE, LOCATION_DE, AGE_DE, INTERESTS_DE, GENDER_DE, SPEND_DE, IMPRESSIONS_DE, CLICKS_DE, ECTR_DE, ECPC_DE];
+        const DE_AWARENESS = [DEVICE_DE, KEYWORD_DE, LOCATION_DE, AGE_DE, INTERESTS_DE, GENDER_DE, SPEND_DE, IMPRESSIONS_DE, CLICKS_DE, ENGAGEMENTS_DE, ER_DE, ECPM_DE];
+        const DE_TRAFFIC = [DEVICE_DE, KEYWORD_DE, LOCATION_DE, AGE_DE, INTERESTS_DE, GENDER_DE, SPEND_DE, IMPRESSIONS_DE, CLICKS_DE, ECTR_DE, ECPC_DE];
 
         const DEVICE_EN = new EnglishHeader("Device", true, false, undefined, undefined);
         const GENDER_EN = new EnglishHeader("Gender", true, false, undefined, undefined);
@@ -88,7 +88,7 @@ const ENGLISH = "english";
         const ECTR_EN = new EnglishHeader("eCTR", false, true, [CLICKS_EN.name, IMPRESSIONS_EN.name], (clicks, impr) => clicks/impr);
         const ECPC_EN = new EnglishHeader("eCPC", false, true, [SPEND_EN.name, CLICKS_EN.name], (spend, clicks) => spend/clicks);
 
-        const EN_AWARENESS = [DEVICE_EN, REGION_EN, METRO_EN, LOCATION_EN, AGE_EN, INTERESTS_EN, GENDER_EN, SPEND_EN, IMPRESSIONS_EN, CLICKS_EN, ENGAGEMENTS_EN, ER_EN, ECPM_EN];
-        const EN_TRAFFIC = [DEVICE_EN, REGION_EN, METRO_EN, LOCATION_EN, AGE_EN, INTERESTS_EN, GENDER_EN, SPEND_EN, IMPRESSIONS_EN, CLICKS_EN, ECTR_EN, ECPC_EN];
+        const EN_AWARENESS = [DEVICE_EN, KEYWORD_EN, REGION_EN, METRO_EN, LOCATION_EN, AGE_EN, INTERESTS_EN, GENDER_EN, SPEND_EN, IMPRESSIONS_EN, CLICKS_EN, ENGAGEMENTS_EN, ER_EN, ECPM_EN];
+        const EN_TRAFFIC = [DEVICE_EN, KEYWORD_EN, REGION_EN, METRO_EN, LOCATION_EN, AGE_EN, INTERESTS_EN, GENDER_EN, SPEND_EN, IMPRESSIONS_EN, CLICKS_EN, ECTR_EN, ECPC_EN];
 
         const ONLY_FOR_CALCULATION = [ENGAGEMENTS_DE, ENGAGEMENTS_EN];
