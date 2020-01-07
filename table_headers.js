@@ -55,6 +55,7 @@ const ENGLISH = "english";
         // TODO need to mark in_between arguments that are needed for calc but not in the end result
         const DEVICE_DE = new GermanHeader("Gerät", true, false, undefined, undefined);
         const GENDER_DE = new GermanHeader("Geschlecht", true, false, undefined, undefined);
+        const REGION_DE = new GermanHeader("Region", true, false, undefined, undefined);
         const AGE_DE = new GermanHeader("Alter", true, false, undefined, undefined);
         const INTERESTS_DE = new GermanHeader("Interessen", true, false, undefined, undefined);
         const LOCATION_DE = new GermanHeader("Gebiet", true, false, undefined, undefined);
@@ -68,8 +69,8 @@ const ENGLISH = "english";
         const ECTR_DE = new GermanHeader("eCTR", false, true, [CLICKS_DE.name, IMPRESSIONS_DE.name], (clicks, impr) => clicks/impr);
         const ECPC_DE = new GermanHeader("eCPC", false, true, [SPEND_DE.name, CLICKS_DE.name], (spend, clicks) => spend/clicks);
 
-        const DE_AWARENESS = [DEVICE_DE, KEYWORD_DE, LOCATION_DE, AGE_DE, INTERESTS_DE, GENDER_DE, SPEND_DE, IMPRESSIONS_DE, CLICKS_DE, ENGAGEMENTS_DE, ER_DE, ECPM_DE];
-        const DE_TRAFFIC = [DEVICE_DE, KEYWORD_DE, LOCATION_DE, AGE_DE, INTERESTS_DE, GENDER_DE, SPEND_DE, IMPRESSIONS_DE, CLICKS_DE, ECTR_DE, ECPC_DE];
+        const DE_AWARENESS = [DEVICE_DE, KEYWORD_DE, REGION_DE, LOCATION_DE, AGE_DE, INTERESTS_DE, GENDER_DE, SPEND_DE, IMPRESSIONS_DE, CLICKS_DE, ENGAGEMENTS_DE, ER_DE, ECPM_DE];
+        const DE_TRAFFIC = [DEVICE_DE, KEYWORD_DE, REGION_DE, LOCATION_DE, AGE_DE, INTERESTS_DE, GENDER_DE, SPEND_DE, IMPRESSIONS_DE, CLICKS_DE, ECTR_DE, ECPC_DE];
 
         const DEVICE_EN = new EnglishHeader("Device", true, false, undefined, undefined);
         const GENDER_EN = new EnglishHeader("Gender", true, false, undefined, undefined);
