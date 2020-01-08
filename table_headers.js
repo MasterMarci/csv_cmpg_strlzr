@@ -92,4 +92,25 @@ const ENGLISH = "english";
         const EN_AWARENESS = [DEVICE_EN, KEYWORD_EN, REGION_EN, METRO_EN, LOCATION_EN, AGE_EN, INTERESTS_EN, GENDER_EN, SPEND_EN, IMPRESSIONS_EN, CLICKS_EN, ENGAGEMENTS_EN, ER_EN, ECPM_EN];
         const EN_TRAFFIC = [DEVICE_EN, KEYWORD_EN, REGION_EN, METRO_EN, LOCATION_EN, AGE_EN, INTERESTS_EN, GENDER_EN, SPEND_EN, IMPRESSIONS_EN, CLICKS_EN, ECTR_EN, ECPC_EN];
 
-        const ONLY_FOR_CALCULATION = [ENGAGEMENTS_DE, ENGAGEMENTS_EN];
+        const DEVICE_FR = new FrenchHeader("Appareil", true, false, undefined, undefined);
+        const GENDER_FR = new FrenchHeader("Identité de genre", true, false, undefined, undefined);
+        const REGION_FR = new FrenchHeader("Région", true, false, undefined, undefined);
+        const AGE_FR = new FrenchHeader("Âge", true, false, undefined, undefined);
+        const INTERESTS_FR = new FrenchHeader("Centres d'intérêt", true, false, undefined, undefined);
+        const METRO_FR = new FrenchHeader("Agglomération", true, false, undefined, undefined);
+        const LOCATION_FR = new FrenchHeader("Location", true, false, undefined, undefined);
+        const KEYWORD_FR = new FrenchHeader("Mot-clé", true, false, undefined, undefined);
+        const SPEND_FR = new FrenchHeader("Dépenses", false, false, undefined, undefined);
+        const IMPRESSIONS_FR = new FrenchHeader("Nombre total d'impressions", false, false, undefined, undefined);
+        const CLICKS_FR = new FrenchHeader("Nombre total de clics", false, false, undefined, undefined);
+        const ENGAGEMENTS_FR = new FrenchHeader("Total des engagements", false, false, undefined, undefined);
+        const ER_FR = new FrenchHeader("ER", false, true, [ENGAGEMENTS_FR.name, IMPRESSIONS_FR.name], (eng,impr) => eng/impr);
+        const ECPM_FR = new FrenchHeader("eCPM", false, true, [SPEND_FR.name, IMPRESSIONS_FR.name], (spend, impr) => (spend/impr)*1000);
+        const ECTR_FR = new FrenchHeader("eCTR", false, true, [CLICKS_FR.name, IMPRESSIONS_FR.name], (clicks, impr) => clicks/impr);
+        const ECPC_FR = new FrenchHeader("eCPC", false, true, [SPEND_FR.name, CLICKS_FR.name], (spend, clicks) => spend/clicks);
+
+        const FR_AWARENESS = [DEVICE_FR, KEYWORD_FR, REGION_FR, METRO_FR, LOCATION_FR, AGE_FR, INTERESTS_FR, GENDER_FR, SPEND_FR, IMPRESSIONS_FR, CLICKS_FR, ENGAGEMENTS_FR, ER_FR, ECPM_FR];
+        const FR_TRAFFIC = [DEVICE_FR, KEYWORD_FR, REGION_FR, METRO_FR, LOCATION_FR, AGE_FR, INTERESTS_FR, GENDER_FR, SPEND_FR, IMPRESSIONS_FR, CLICKS_FR, ECTR_FR, ECPC_FR];
+
+
+        const ONLY_FOR_CALCULATION = [ENGAGEMENTS_DE, ENGAGEMENTS_EN, ENGAGEMENTS_FR];
