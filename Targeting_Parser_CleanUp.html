@@ -43,6 +43,30 @@
 			columns: null //or array of strings
 		}
 
+		function cleanUpCSVRawData(header, dirty) {
+			var clean;
+			if(header.language == ENGLISH) {
+				if(isNaN(dirty[0]) == false || dirty[0] == "€") {
+					clean = dirty.replace(",", "").replace("€","");
+				} else {
+					return dirty;
+				}
+			} else if (header.language == FRENCH) {
+				if(isNaN(dirty[0]) == false || dirty[0] == "€") {
+					clean = dirty.replace(".", "").replace("€","").replace(" ", "");
+				} else {
+					return dirty;
+				}
+			} else if (header.language == GERMAN) {
+				if(isNaN(dirty) && (dirty[dirty.length - 1] == "€" || (dirty.includes(",") && dirty.match(/[a-z]/i) == false))) {
+					clean = dirty.replace("€","").replace(" ", "").replace(",", ".");
+				} else {
+					return dirty;
+				}
+			}
+			return clean;
+		}
+
 		function download(filename, text) {
             var universalBOM = "\uFEFF";
 			var element = document.createElement('a');
@@ -103,7 +127,7 @@
 
                     for (headersIndex = 0; headersIndex < headers.length; headersIndex++) {
                         if(headers[headersIndex].index !== "undefined" && headers[headersIndex].index >= 0) {
-                            resultTable[currentLength].push(csv.data[rowIndex][headers[headersIndex].index]);
+                            resultTable[currentLength].push(cleanUpCSVRawData(headers[0], csv.data[rowIndex][headers[headersIndex].index]));
                         }
                     }
 				}
