@@ -44,7 +44,7 @@
 		}
 
 		function cleanUpCSVRawData(header, dirty) {
-			if (dirty.length == 0) {
+			if (dirty.length == 0 || dirty == undefined) {
 				return dirty;
 			}
 			var clean;
