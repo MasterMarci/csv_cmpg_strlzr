@@ -44,6 +44,9 @@
 		}
 
 		function cleanUpCSVRawData(header, dirty) {
+			if (dirty.length == 0) {
+				return dirty;
+			}
 			var clean;
 			if(header.language == ENGLISH) {
 				if(isNaN(dirty[0]) == false || dirty[0] == "€") {
