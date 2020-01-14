@@ -56,7 +56,7 @@
 				}
 			} else if (header.language == FRENCH) {
 				if(isNaN(dirty[0]) == false || dirty[0] == "€") {
-					clean = dirty.replace(".", "").replace("€","").replace(" ", "");
+					clean = dirty.replace(".", "").replace("€","").replace(" ", "").replace(" ", "").replace(",", ".");
 				} else {
 					return dirty;
 				}
