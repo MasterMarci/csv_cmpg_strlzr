@@ -1,0 +1,116 @@
+<html>
+	
+	<head>
+		<meta charset="UTF-8">
+		<script src="./papaparse.min.js"></script>
+		<script>
+
+		const PAPAPARSE_CONFIG = {
+			delimiter: "",	// auto-detect
+			newline: "",	// auto-detect
+			quoteChar: '"',
+			preview: 0,
+			escapeChar: '"',
+			header: false,
+			transformHeader: undefined,
+			dynamicTyping: false,
+			encoding: "ISO-8859-1",
+			worker: false,
+			comments: false,
+			step: undefined,
+			complete: undefined,
+			error: undefined,
+			download: false,
+			downloadRequestHeaders: undefined,
+			skipEmptyLines: false,
+			chunk: undefined,
+			fastMode: undefined,
+			beforeFirstChunk: undefined,
+			withCredentials: undefined,
+			transform: undefined,
+			delimitersToGuess: [',', '\t', '|', ';', Papa.RECORD_SEP, Papa.UNIT_SEP]
+		}
+
+		const UNPARSE_CONFIG = {
+			quotes: false, //or array of booleans
+			quoteChar: '"',
+			escapeChar: '"',
+			delimiter: ",",
+			header: true,
+			newline: "\r\n",
+			skipEmptyLines: false, //or 'greedy',
+			columns: null //or array of strings
+		}
+
+		function cleanUpCSVRawData(dirty) {
+			if (dirty == undefined || dirty.length == 0) {
+				return dirty;
+			}
+
+			if(isNaN(dirty[0]) == false || dirty[0] == "€") {
+				clean = dirty.replace(".", "").replace("€","").replace(" ", "").replace(" ", "").replace(",", ".").replace(" ","");
+			} else {
+				return dirty;
+			}
+			return clean;
+		}
+
+		function download(filename, text) {
+            var universalBOM = "\uFEFF";
+			var element = document.createElement('a');
+			element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(universalBOM + text));
+			element.setAttribute('download', filename);
+			element.style.display = 'none';
+			document.body.appendChild(element);
+			element.click();
+			document.body.removeChild(element);
+        }
+
+		function parseAndTransformCSV(csvString) {
+			var csv = Papa.parse(csvString, PAPAPARSE_CONFIG);
+            console.log(csv);
+            var i;
+			for (i = 1; i < csv.data.length; i++) {
+				var j = 0;
+				for (j = 0; j < csv.data[i].length; j++) {
+					csv.data[i][j] = cleanUpCSVRawData(csv.data[i][j])
+				}
+			}
+			var exportable = Papa.unparse(csv.data, UNPARSE_CONFIG);
+			/*exportable = exportable.replace(/\r\n/g, "\"\r\n\"");
+			exportable = exportable.replace(/,/g, "\",\"");
+			exportable = "\"" + exportable + "\"";*/
+			console.log(exportable);
+			download("formatted.csv", exportable);
+		}
+
+		function loadFile() {
+			var csvFile = document.getElementById("csvUpload").files[0];
+			var csvString;
+			var reader = new FileReader();
+			reader.onload = function (e) {
+				var contents = e.target.result;
+				document.getElementById("csvContent").value = contents;
+				parseAndTransformCSV(contents)
+			};
+			reader.readAsText(csvFile);
+		}
+
+		(function () {
+			// on document load
+		})();
+	</script>
+
+</head>
+
+<body>
+	<h1>CSV Cleaner</h1>
+	<p>Formats Numbers to  this kind of format ..00000.0000..</p>
+	<input type="file" id="csvUpload" />
+    <br />
+    <br />
+	<button id="startConvertButton" onClick="loadFile()">Convert</button>
+	<input type="hidden" id="csvContent" onchange="parseAndTransformCSV()" />
+</body>
+
+</html>
